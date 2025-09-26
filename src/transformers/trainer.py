@@ -2988,7 +2988,7 @@ class Trainer:
                     state_dict = safetensors.torch.load_file(safe_weights_file, device="cpu")
                 else:
                     check_torch_load_is_safe()
-                    state_dict = torch.load(weights_file, map_location="cpu", weights_only=True)
+                    state_dict = torch.load(weights_file, map_location="cpu", weights_only=False)
 
                 # workaround for FSDP bug https://github.com/pytorch/pytorch/issues/82963
                 # which takes *args instead of **kwargs
