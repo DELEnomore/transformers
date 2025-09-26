@@ -3260,7 +3260,7 @@ class Trainer:
                 return
 
         with safe_globals():
-            checkpoint_rng_state = torch.load(rng_file)
+            checkpoint_rng_state = torch.load(rng_file, weights_only=False)
         random.setstate(checkpoint_rng_state["python"])
         np.random.set_state(checkpoint_rng_state["numpy"])
         torch.random.set_rng_state(checkpoint_rng_state["cpu"])
@@ -3494,7 +3494,7 @@ class Trainer:
                 with warnings.catch_warnings(record=True) as caught_warnings:
                     check_torch_load_is_safe()
                     self.lr_scheduler.load_state_dict(
-                        torch.load(os.path.join(checkpoint, SCHEDULER_NAME), weights_only=True)
+                        torch.load(os.path.join(checkpoint, SCHEDULER_NAME), weights_only=False)
                     )
                 reissue_pt_warnings(caught_warnings)
             return
@@ -3531,19 +3531,19 @@ class Trainer:
                             checkpoint, f"rank{self.args.process_index}-of-{self.args.world_size}-{OPTIMIZER_NAME}"
                         ),
                         map_location="cpu",
-                        weights_only=True,
+                        weights_only=False,
                     )
                     # We only need `optimizer` when resuming from checkpoint
                     optimizer_state = optimizer_state["optimizer"]
                 else:
                     check_torch_load_is_safe()
                     optimizer_state = torch.load(
-                        os.path.join(checkpoint, OPTIMIZER_NAME), map_location="cpu", weights_only=True
+                        os.path.join(checkpoint, OPTIMIZER_NAME), map_location="cpu", weights_only=False
                     )
                 with warnings.catch_warnings(record=True) as caught_warnings:
                     check_torch_load_is_safe()
                     lr_scheduler_state = torch.load(
-                        os.path.join(checkpoint, SCHEDULER_NAME), map_location="cpu", weights_only=True
+                        os.path.join(checkpoint, SCHEDULER_NAME), map_location="cpu", weights_only=False
                     )
                 reissue_pt_warnings(caught_warnings)
 
@@ -3588,13 +3588,13 @@ class Trainer:
                         check_torch_load_is_safe()
                         self.optimizer.load_state_dict(
                             torch.load(
-                                os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location, weights_only=True
+                                os.path.join(checkpoint, OPTIMIZER_NAME), map_location=map_location, weights_only=False
                             )
                         )
                 with warnings.catch_warnings(record=True) as caught_warnings:
                     check_torch_load_is_safe()
                     self.lr_scheduler.load_state_dict(
-                        torch.load(os.path.join(checkpoint, SCHEDULER_NAME), weights_only=True)
+                        torch.load(os.path.join(checkpoint, SCHEDULER_NAME), weights_only=False)
                     )
                 reissue_pt_warnings(caught_warnings)
 
@@ -3632,7 +3632,7 @@ class Trainer:
                 with warnings.catch_warnings(record=True) as caught_warnings:
                     check_torch_load_is_safe()
                     scaler_state = torch.load(
-                        os.path.join(checkpoint, SCALER_NAME), map_location="cpu", weights_only=True
+                        os.path.join(checkpoint, SCALER_NAME), map_location="cpu", weights_only=False
                     )
                 reissue_pt_warnings(caught_warnings)
                 xm.send_cpu_data_to_device(scaler_state, self.args.device)
@@ -3641,7 +3641,7 @@ class Trainer:
                 with warnings.catch_warnings(record=True) as caught_warnings:
                     check_torch_load_is_safe()
                     self.accelerator.scaler.load_state_dict(
-                        torch.load(os.path.join(checkpoint, SCALER_NAME), weights_only=True)
+                        torch.load(os.path.join(checkpoint, SCALER_NAME), weights_only=False)
                     )
                 reissue_pt_warnings(caught_warnings)
 
