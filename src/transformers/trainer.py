@@ -2968,7 +2968,7 @@ class Trainer:
                             "Enabling FP16 and loading from smp < 1.10 checkpoint together is not supported."
                         )
                     check_torch_load_is_safe()
-                    state_dict = torch.load(weights_file, map_location="cpu", weights_only=True)
+                    state_dict = torch.load(weights_file, map_location="cpu", weights_only=False)
                     # Required for smp to not auto-translate state_dict from hf to smp (is already smp).
                     state_dict["_smp_is_partial"] = False
                     load_result = model.load_state_dict(state_dict, strict=True)
